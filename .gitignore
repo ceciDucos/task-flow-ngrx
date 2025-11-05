@@ -1,0 +1,29 @@
+# Angular build outputs
+/dist
+/tmp
+/out-tsc
+
+# Dependencies
+/node_modules
+
+# Angular CLI cache
+/.angular/cache
+
+# Test coverage
+/coverage
+
+# IDEs
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+
+# Logs
+npm-debug.log
+yarn-error.log

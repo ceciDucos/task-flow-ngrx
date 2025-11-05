@@ -1,0 +1,279 @@
+<div class="kanban">
+  @if (loading$ | async) {
+    <div class="kanban__loading">
+      <div class="spinner"></div>
+      <p>{{ 'kanban.loading' | translate }}</p>
+    </div>
+  } @else {
+    <div class="kanban__header">
+      <h2 class="kanban__title">
+        <mat-icon>view_kanban</mat-icon> {{ 'kanban.title' | translate }}
+      </h2>
+      <p class="kanban__subtitle">{{ 'kanban.subtitle' | translate }}</p>
+    </div>
+
+    @if (tasksByStatus$ | async; as tasksByStatus) {
+      <div class="kanban__board">
+        <div class="kanban-column kanban-column--todo">
+          <div class="kanban-column__header">
+            <h3 class="kanban-column__title">
+              <span class="kanban-column__icon">
+                <mat-icon>list</mat-icon>
+              </span>
+              {{ 'kanban.columns.todo' | translate }}
+            </h3>
+            <span class="kanban-column__count">{{ tasksByStatus.todo.length || 0 }}</span>
+          </div>
+          
+          <div class="kanban-column__content">
+            @if (!tasksByStatus.todo || tasksByStatus.todo.length === 0) {
+              <div class="kanban-column__empty">
+                <p>{{ 'kanban.empty.todo' | translate }}</p>
+              </div>
+            } @else {
+              @for (task of tasksByStatus.todo; track task.id) {
+                <div class="task-card"
+                     [class.task-card--expanded]="(taskListStore.expandedTaskId$ | async) === task.id"
+                     (click)="taskListStore.toggleExpandTask(task.id)">
+                  <div class="task-card__header">
+                    <span class="task-card__priority" [ngClass]="getPriorityClass(task.priority)">
+                      @switch (task.priority) {
+                        
+                        @case (TaskPriority.HIGH) { <mat-icon>arrow_upward</mat-icon> }
+                        @case (TaskPriority.MEDIUM) { <mat-icon>remove</mat-icon> }
+                        @case (TaskPriority.LOW) { <mat-icon>arrow_downward</mat-icon> }
+                      }
+                    </span>
+                    <button class="task-card__delete" 
+                            (click)="onDeleteTask(task.id); $event.stopPropagation()">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                  
+                  <h4 class="task-card__title">{{ task.title }}</h4>
+                  <p class="task-card__description">{{ task.description }}</p>
+                  
+                  <div class="task-card__tags">
+                    @for (tag of task.tags; track tag) {
+                      <span class="task-card__tag">{{ tag }}</span>
+                    }
+                  </div>
+
+                  <div class="task-card__footer">
+                    <span class="task-card__date">
+                      <mat-icon>event</mat-icon> {{ task.dueDate }}
+                    </span>
+                  </div>
+
+                  <div class="task-card__actions">
+                    <button class="task-card__action" 
+                            (click)="onStatusChange(task.id, TaskStatus.DEVELOPMENT); $event.stopPropagation()">
+                      {{ 'kanban.actions.toDevelopment' | translate }}
+                    </button>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        </div>
+
+        <div class="kanban-column kanban-column--development">
+          <div class="kanban-column__header">
+            <h3 class="kanban-column__title">
+              <span class="kanban-column__icon">
+                <mat-icon>code</mat-icon>
+              </span>
+              {{ 'kanban.columns.development' | translate }}
+            </h3>
+            <span class="kanban-column__count">{{ tasksByStatus.development.length || 0 }}</span>
+          </div>
+          
+          <div class="kanban-column__content">
+            @if (!tasksByStatus.development || tasksByStatus.development.length === 0) {
+              <div class="kanban-column__empty">
+                <p>{{ 'kanban.empty.development' | translate }}</p>
+              </div>
+            } @else {
+              @for (task of tasksByStatus.development; track task.id) {
+                <div class="task-card"
+                     [class.task-card--expanded]="(taskListStore.expandedTaskId$ | async) === task.id"
+                     (click)="taskListStore.toggleExpandTask(task.id)">
+                  <div class="task-card__header">
+                    <span class="task-card__priority" [ngClass]="getPriorityClass(task.priority)">
+                      @switch (task.priority) {
+                        
+                        @case (TaskPriority.HIGH) { <mat-icon>arrow_upward</mat-icon> }
+                        @case (TaskPriority.MEDIUM) { <mat-icon>remove</mat-icon> }
+                        @case (TaskPriority.LOW) { <mat-icon>arrow_downward</mat-icon> }
+                      }
+                    </span>
+                    <button class="task-card__delete" 
+                            (click)="onDeleteTask(task.id); $event.stopPropagation()">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                  
+                  <h4 class="task-card__title">{{ task.title }}</h4>
+                  <p class="task-card__description">{{ task.description }}</p>
+                  
+                  <div class="task-card__tags">
+                    @for (tag of task.tags; track tag) {
+                      <span class="task-card__tag">{{ tag }}</span>
+                    }
+                  </div>
+
+                  <div class="task-card__footer">
+                    <span class="task-card__date">
+                      <mat-icon>event</mat-icon> {{ task.dueDate }}
+                    </span>
+                  </div>
+
+                  <div class="task-card__actions">
+                    <button class="task-card__action task-card__action--secondary" 
+                            (click)="onStatusChange(task.id, TaskStatus.TODO); $event.stopPropagation()">
+                      {{ 'kanban.actions.toTodo' | translate }}
+                    </button>
+                    <button class="task-card__action" 
+                            (click)="onStatusChange(task.id, TaskStatus.TESTING); $event.stopPropagation()">
+                      {{ 'kanban.actions.toTesting' | translate }}
+                    </button>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        </div>
+
+        <div class="kanban-column kanban-column--testing">
+          <div class="kanban-column__header">
+            <h3 class="kanban-column__title">
+              <span class="kanban-column__icon">
+                <mat-icon>bug_report</mat-icon>
+              </span>
+              {{ 'kanban.columns.testing' | translate }}
+            </h3>
+            <span class="kanban-column__count">{{ tasksByStatus.testing.length || 0 }}</span>
+          </div>
+          
+          <div class="kanban-column__content">
+            @if (!tasksByStatus.testing || tasksByStatus.testing.length === 0) {
+              <div class="kanban-column__empty">
+                <p>{{ 'kanban.empty.testing' | translate }}</p>
+              </div>
+            } @else {
+              @for (task of tasksByStatus.testing; track task.id) {
+                <div class="task-card"
+                     [class.task-card--expanded]="(taskListStore.expandedTaskId$ | async) === task.id"
+                     (click)="taskListStore.toggleExpandTask(task.id)">
+                  <div class="task-card__header">
+                    <span class="task-card__priority" [ngClass]="getPriorityClass(task.priority)">
+                      @switch (task.priority) {
+                        
+                        @case (TaskPriority.HIGH) { <mat-icon>arrow_upward</mat-icon> }
+                        @case (TaskPriority.MEDIUM) { <mat-icon>remove</mat-icon> }
+                        @case (TaskPriority.LOW) { <mat-icon>arrow_downward</mat-icon> }
+                      }
+                    </span>
+                    <button class="task-card__delete" 
+                            (click)="onDeleteTask(task.id); $event.stopPropagation()">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                  
+                  <h4 class="task-card__title">{{ task.title }}</h4>
+                  <p class="task-card__description">{{ task.description }}</p>
+                  
+                  <div class="task-card__tags">
+                    @for (tag of task.tags; track tag) {
+                      <span class="task-card__tag">{{ tag }}</span>
+                    }
+                  </div>
+
+                  <div class="task-card__footer">
+                    <span class="task-card__date">
+                      <mat-icon>event</mat-icon> {{ task.dueDate }}
+                    </span>
+                  </div>
+
+                  <div class="task-card__actions">
+                    <button class="task-card__action task-card__action--secondary" 
+                            (click)="onStatusChange(task.id, TaskStatus.DEVELOPMENT); $event.stopPropagation()">
+                      {{ 'kanban.actions.toDevelopment' | translate }}
+                    </button>
+                    <button class="task-card__action" 
+                            (click)="onStatusChange(task.id, TaskStatus.DONE); $event.stopPropagation()">
+                      {{ 'kanban.actions.toDone' | translate }}
+                    </button>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        </div>
+
+        <div class="kanban-column kanban-column--done">
+          <div class="kanban-column__header">
+            <h3 class="kanban-column__title">
+              <span class="kanban-column__icon">
+                <mat-icon>check_circle</mat-icon>
+              </span>
+              {{ 'kanban.columns.done' | translate }}
+            </h3>
+            <span class="kanban-column__count">{{ tasksByStatus.done.length || 0 }}</span>
+          </div>
+          
+          <div class="kanban-column__content">
+            @if (!tasksByStatus.done || tasksByStatus.done.length === 0) {
+              <div class="kanban-column__empty">
+                <p>{{ 'kanban.empty.done' | translate }}</p>
+              </div>
+            } @else {
+              @for (task of tasksByStatus.done; track task.id) {
+                <div class="task-card task-card--done"
+                     [class.task-card--expanded]="(taskListStore.expandedTaskId$ | async) === task.id"
+                     (click)="taskListStore.toggleExpandTask(task.id)">
+                  <div class="task-card__header">
+                    <span class="task-card__priority" [ngClass]="getPriorityClass(task.priority)">
+                      @switch (task.priority) {
+                        
+                        @case (TaskPriority.HIGH) { <mat-icon>arrow_upward</mat-icon> }
+                        @case (TaskPriority.MEDIUM) { <mat-icon>remove</mat-icon> }
+                        @case (TaskPriority.LOW) { <mat-icon>arrow_downward</mat-icon> }
+                      }
+                    </span>
+                    <button class="task-card__delete" 
+                            (click)="onDeleteTask(task.id); $event.stopPropagation()">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                  
+                  <h4 class="task-card__title">{{ task.title }}</h4>
+                  <p class="task-card__description">{{ task.description }}</p>
+                  
+                  <div class="task-card__tags">
+                    @for (tag of task.tags; track tag) {
+                      <span class="task-card__tag">{{ tag }}</span>
+                    }
+                  </div>
+
+                  <div class="task-card__footer">
+                    <span class="task-card__date">
+                      <mat-icon>check</mat-icon> {{ task.updatedAt }}
+                    </span>
+                  </div>
+
+                  <div class="task-card__actions">
+                    <button class="task-card__action task-card__action--secondary" 
+                            (click)="onStatusChange(task.id, TaskStatus.TESTING); $event.stopPropagation()">
+                      {{ 'kanban.actions.toTesting' | translate }}
+                    </button>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>

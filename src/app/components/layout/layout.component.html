@@ -1,0 +1,22 @@
+<div class="layout">
+  <header class="layout__header">
+    <div class="layout__header-content">
+      <div class="layout__brand">
+        <h1 class="layout__title">{{ 'app.title' | translate }}</h1>
+      </div>
+
+      <nav class="layout__nav">
+        <a routerLink="/backlog" routerLinkActive="layout__nav-link--active" class="layout__nav-link">
+          {{ 'nav.backlog' | translate }}
+        </a>
+        <a routerLink="/kanban" routerLinkActive="layout__nav-link--active" class="layout__nav-link">
+          {{ 'nav.kanban' | translate }}
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="layout__main">
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -1,0 +1,75 @@
+{
+  "app": {
+    "title": "Task Flow"
+  },
+  "nav": {
+    "backlog": "Backlog",
+    "kanban": "Kanban"
+  },
+  "backlog": {
+    "title": "Development Backlog",
+    "subtitle": "Manage and prioritize your development tasks",
+    "filter": {
+      "search": "Search tasks...",
+      "priority": "Priority",
+      "allPriorities": "All Priorities",
+      "status": "Status",
+      "allStatuses": "All Statuses"
+    },
+    "tags": {
+      "title": "Filter by Tags",
+      "all": "All"
+    },
+    "count": {
+      "tasks": "tasks",
+      "task": "task"
+    },
+    "loading": "Loading tasks...",
+    "empty": "No tasks found",
+    "priority": {
+      "urgent": "Urgent",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "status": {
+      "backlog": "Backlog",
+      "todo": "To Do",
+      "development": "Development",
+      "testing": "Testing",
+      "done": "Done"
+    },
+    "table": {
+      "ticket": "Ticket",
+      "priority": "Priority",
+      "task": "Task",
+      "tags": "Tags",
+      "status": "Status",
+      "assigned": "Assigned",
+      "date": "Date"
+    }
+  },
+  "kanban": {
+    "title": "Development Board",
+    "subtitle": "Visual development workflow with NgRx Component Store",
+    "columns": {
+      "todo": "To Do",
+      "development": "Development",
+      "testing": "Testing",
+      "done": "Done"
+    },
+    "loading": "Loading Kanban board...",
+    "empty": {
+      "todo": "No tasks to do",
+      "development": "No tasks in development", 
+      "testing": "No tasks in testing",
+      "done": "No completed tasks"
+    },
+    "actions": {
+      "toDevelopment": "→ Development",
+      "toTodo": "← To Do",
+      "toTesting": "→ Testing",
+      "toDone": "→ Done"
+    }
+  }
+}

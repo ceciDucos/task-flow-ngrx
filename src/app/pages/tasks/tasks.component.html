@@ -1,0 +1,151 @@
+<div class="tasks">
+  <div class="tasks__header">
+    <div class="tasks__header-content">
+      <h2 class="tasks__title">{{ 'backlog.title' | translate }}</h2>
+      <p class="tasks__subtitle">{{ 'backlog.subtitle' | translate }}</p>
+    </div>
+  </div>
+
+  <div class="tasks__filters">
+    <input 
+      type="text" 
+      class="filter-group__input"
+      [placeholder]="'backlog.filter.search' | translate"
+      [(ngModel)]="searchTerm"
+      (input)="applyFilter()">
+
+      <select 
+        class="filter-group__select"
+        [(ngModel)]="selectedPriority"
+        (change)="applyFilter()">
+        <option value="">{{ 'backlog.filter.allPriorities' | translate }}</option>
+        <option [value]="TaskPriority.HIGH">{{ 'backlog.priority.high' | translate }}</option>
+        <option [value]="TaskPriority.MEDIUM">{{ 'backlog.priority.medium' | translate }}</option>
+        <option [value]="TaskPriority.LOW">{{ 'backlog.priority.low' | translate }}</option>
+      </select>    <select 
+      class="filter-group__select"
+      [(ngModel)]="selectedStatus"
+      (change)="applyFilter()">
+      <option value="">{{ 'backlog.filter.allStatuses' | translate }}</option>
+      <option [value]="TaskStatus.BACKLOG">{{ 'backlog.status.backlog' | translate }}</option>
+      <option [value]="TaskStatus.TODO">{{ 'backlog.status.todo' | translate }}</option>
+      <option [value]="TaskStatus.DEVELOPMENT">{{ 'backlog.status.development' | translate }}</option>
+      <option [value]="TaskStatus.TESTING">{{ 'backlog.status.testing' | translate }}</option>
+      <option [value]="TaskStatus.DONE">{{ 'backlog.status.done' | translate }}</option>
+    </select>
+
+    <button class="filter-group__clear" (click)="clearFilters()">
+      <mat-icon>clear_all</mat-icon>
+    </button>
+  </div>
+
+  @if (availableTags$ | async; as tags) {
+    @if (tags.length > 0) {
+      <div class="tasks__tags">
+        <button 
+          class="tag-chip"
+          [class.tag-chip--active]="selectedTags().length === 0"
+          (click)="clearFilters()">
+          {{ 'backlog.tags.all' | translate }}
+        </button>
+        @for (tag of tags; track tag) {
+          <button 
+            class="tag-chip"
+            [class.tag-chip--active]="selectedTags().includes(tag)"
+            (click)="toggleTag(tag); applyFilter()">
+            {{ tag }}
+          </button>
+        }
+      </div>
+    }
+  }
+
+  @if (loading$ | async) {
+    <div class="tasks__loading">
+      <div class="spinner"></div>
+      <p>{{ 'backlog.loading' | translate }}</p>
+    </div>
+  } @else {
+    @if (tasks$ | async; as tasks) {
+      @if (tasks.length === 0) {
+        <div class="tasks__empty">
+          <mat-icon>inbox</mat-icon>
+          <p>{{ 'backlog.empty' | translate }}</p>
+        </div>
+      } @else {
+        <div class="tasks__count">
+          {{ tasks.length }} {{ tasks.length === 1 ? ('backlog.count.task' | translate) : ('backlog.count.tasks' | translate) }}
+        </div>
+
+        <table class="tasks__table">
+          <thead class="tasks__table-head">
+            <tr>
+              <th>{{ 'backlog.table.ticket' | translate }}</th>
+              <th>{{ 'backlog.table.priority' | translate }}</th>
+              <th>{{ 'backlog.table.task' | translate }}</th>
+              <th>{{ 'backlog.table.tags' | translate }}</th>
+              <th>{{ 'backlog.table.status' | translate }}</th>
+              <th>{{ 'backlog.table.assigned' | translate }}</th>
+              <th>{{ 'backlog.table.date' | translate }}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody class="tasks__table-body">
+            @for (task of tasks; track task.id; let idx = $index) {
+              <tr class="task-row task-row--{{ task.priority.toLowerCase() }}">
+                <td class="task-row__ticket">
+                  <span class="task-row__ticket-number">CD-{{ 490 + idx }}</span>
+                </td>
+                
+                <td class="task-row__priority">
+                  <span class="task-row__priority-badge task-row__priority-badge--{{ task.priority.toLowerCase() }}">
+                    {{ 'backlog.priority.' + task.priority.toLowerCase() | translate }}
+                  </span>
+                </td>
+                
+                <td class="task-row__content">
+                  <div class="task-row__title">{{ task.title }}</div>
+                </td>
+
+                <td class="task-row__tags">
+                  @if (task.tags && task.tags.length > 0) {
+                    @for (tag of task.tags; track tag) {
+                      <span class="task-row__tag">{{ tag }}</span>
+                    }
+                  }
+                </td>
+
+                <td class="task-row__status">
+                  <select 
+                    class="task-row__status-select task-row__status-select--{{ task.status }}"
+                    [value]="task.status"
+                    (change)="onStatusChange(task.id, $any($event.target).value)">
+                    <option [value]="TaskStatus.BACKLOG">{{ 'backlog.status.backlog' | translate }}</option>
+                    <option [value]="TaskStatus.TODO">{{ 'backlog.status.todo' | translate }}</option>
+                    <option [value]="TaskStatus.DEVELOPMENT">{{ 'backlog.status.development' | translate }}</option>
+                    <option [value]="TaskStatus.TESTING">{{ 'backlog.status.testing' | translate }}</option>
+                    <option [value]="TaskStatus.DONE">{{ 'backlog.status.done' | translate }}</option>
+                  </select>
+                </td>
+
+                <td class="task-row__assignee">
+                  {{ task.assignedTo || '-' }}
+                </td>
+
+                <td class="task-row__date">
+                  {{ task.createdAt | date:'MMM d, y' }}
+                </td>
+
+                <td class="task-row__actions">
+                  <button class="task-row__delete" (click)="onDeleteTask(task.id)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    }
+  }
+</div>
