@@ -1,7 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-layout',
@@ -11,5 +10,4 @@ import { TranslationService } from '../../services/translation.service';
   styleUrl: './layout.component.scss'
 })
 export class LayoutComponent {
-  private translationService = inject(TranslationService);
 }

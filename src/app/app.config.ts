@@ -33,12 +33,10 @@ export const appConfig: ApplicationConfig = {
       connectInZone: true
     }),
     importProvidersFrom(
-      TranslateModule.forRoot({
-        defaultLanguage: 'en'
-      })
+      TranslateModule.forRoot()
     ),
     provideTranslateHttpLoader({
-      prefix: './assets/i18n/',
+      prefix: '/assets/i18n/',
       suffix: '.json'
     })
   ]
